@@ -94,9 +94,9 @@ info:
     url: https://opensource.org/licenses/MIT
 
 servers:
-  - url: http://localhost:8000/api
+  - url: http://localhost:8000
     description: Local development server
-  - url: https://api.todoapi.com/api
+  - url: https://api.todoapi.com
     description: Production server
 
 tags:
@@ -547,7 +547,7 @@ components:
           example: Data retrieved successfully
 
 paths:
-  /register:
+  /api/register:
     post:
       summary: Register a new user
       description: |
@@ -615,7 +615,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /login:
+  /api/login:
     post:
       summary: Login user
       description: |
@@ -675,7 +675,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /logout:
+  /api/logout:
     post:
       summary: Logout user
       description: |
@@ -703,7 +703,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /user:
+  /api/user:
     get:
       summary: Get authenticated user
       description: |
@@ -735,7 +735,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /statistics:
+  /api/statistics:
     get:
       summary: Get general statistics
       description: |
@@ -764,7 +764,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /statistics/dashboard:
+  /api/statistics/dashboard:
     get:
       summary: Get dashboard statistics
       description: |
@@ -793,7 +793,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /todo-lists:
+  /api/todo-lists:
     get:
       summary: Get all todo lists
       description: |
@@ -895,7 +895,7 @@ paths:
         '422':
           description: Validation error
 
-  /todo-lists/{id}:
+  /api/todo-lists/{id}:
     get:
       summary: Get a single todo list
       description: |
@@ -1016,7 +1016,7 @@ paths:
         '404':
           description: Todo list not found
 
-  /todo-lists/{todoList}/archive:
+  /api/todo-lists/{todoList}/archive:
     post:
       summary: Archive a todo list
       description: |
@@ -1051,7 +1051,7 @@ paths:
         '404':
           description: Todo list not found
 
-  /todo-lists/{id}/restore:
+  /api/todo-lists/{id}/restore:
     post:
       summary: Restore an archived todo list
       description: |
@@ -1085,7 +1085,7 @@ paths:
         '404':
           description: Todo list not found
 
-  /todo-lists/{todoList}/toggle-favorite:
+  /api/todo-lists/{todoList}/toggle-favorite:
     post:
       summary: Toggle favorite status
       description: |
@@ -1121,7 +1121,7 @@ paths:
         '404':
           description: Todo list not found
 
-  /todo-lists/{todoList}/notes:
+  /api/todo-lists/{todoList}/notes:
     get:
       summary: Get all notes for a todo list
       description: |
@@ -1203,7 +1203,7 @@ paths:
         '422':
           description: Validation error
 
-  /todo-lists/{todoList}/notes/{note}:
+  /api/todo-lists/{todoList}/notes/{note}:
     get:
       summary: Get a single note
       description: |
@@ -1335,7 +1335,7 @@ paths:
         '404':
           description: Note not found
 
-  /todo-lists/{todoList}/reminders:
+  /api/todo-lists/{todoList}/reminders:
     get:
       summary: Get all reminders for a todo list
       description: |
@@ -1418,7 +1418,7 @@ paths:
         '422':
           description: Validation error
 
-  /todo-lists/{todoList}/reminders/{reminder}:
+  /api/todo-lists/{todoList}/reminders/{reminder}:
     get:
       summary: Get a single reminder
       description: |
@@ -1551,7 +1551,7 @@ paths:
         '404':
           description: Reminder not found
 
-  /todo-lists/{todoList}/shares:
+  /api/todo-lists/{todoList}/shares:
     get:
       summary: Get all shares for a todo list
       description: |
@@ -1645,7 +1645,7 @@ paths:
         '422':
           description: Validation error
 
-  /todo-lists/{todoList}/shares/{share}:
+  /api/todo-lists/{todoList}/shares/{share}:
     get:
       summary: Get a single share
       description: |
@@ -1780,7 +1780,7 @@ paths:
         '404':
           description: Share not found
 
-  /todos:
+  /api/todos:
     get:
       summary: Get all todos
       description: |
@@ -2043,7 +2043,7 @@ paths:
         '422':
           description: Validation error
 
-  /todos/{id}:
+  /api/todos/{id}:
     get:
       summary: Get a single todo
       description: |
@@ -2201,7 +2201,7 @@ paths:
         '404':
           description: Todo not found
 
-  /todos/{todo}/archive:
+  /api/todos/{todo}/archive:
     post:
       summary: Archive a todo
       description: |
@@ -2236,7 +2236,7 @@ paths:
         '404':
           description: Todo not found
 
-  /todos/{id}/restore:
+  /api/todos/{id}/restore:
     post:
       summary: Restore an archived todo
       description: |
@@ -2270,7 +2270,7 @@ paths:
         '404':
           description: Todo not found
 
-  /todos/{todo}/comments:
+  /api/todos/{todo}/comments:
     get:
       summary: Get all comments for a todo
       description: |
@@ -2358,7 +2358,7 @@ paths:
         '422':
           description: Validation error
 
-  /todos/{todo}/comments/{comment}:
+  /api/todos/{todo}/comments/{comment}:
     get:
       summary: Get a single comment
       description: |
@@ -2490,7 +2490,7 @@ paths:
         '404':
           description: Comment not found
 
-  /tags:
+  /api/tags:
     get:
       summary: Get all tags
       description: |
@@ -2565,7 +2565,7 @@ paths:
         '422':
           description: Validation error
 
-  /tags/{id}:
+  /api/tags/{id}:
     get:
       summary: Get a single tag
       description: |
@@ -2683,7 +2683,7 @@ paths:
         '404':
           description: Tag not found
 
-  /todos/bulk-update:
+  /api/todos/bulk-update:
     post:
       summary: Bulk update todos
       description: |
@@ -2755,7 +2755,7 @@ paths:
         '422':
           description: Validation error
 
-  /todos/bulk-delete:
+  /api/todos/bulk-delete:
     post:
       summary: Bulk delete todos
       description: |
@@ -2802,7 +2802,7 @@ paths:
         '422':
           description: Validation error
 
-  /todos/bulk-assign-tags:
+  /api/todos/bulk-assign-tags:
     post:
       summary: Bulk assign tags to todos
       description: |
@@ -2850,7 +2850,7 @@ paths:
         '422':
           description: Validation error
 
-  /activity-logs:
+  /api/activity-logs:
     get:
       summary: Get all activity logs
       description: |
@@ -2897,7 +2897,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /activity-logs/{log}:
+  /api/activity-logs/{log}:
     get:
       summary: Get a single activity log
       description: |
@@ -2933,7 +2933,7 @@ paths:
         '404':
           description: Activity log not found
 
-  /export/todos:
+  /api/export/todos:
     post:
       summary: Export todos to JSON
       description: |
@@ -2980,7 +2980,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /export/todo-lists:
+  /api/export/todo-lists:
     post:
       summary: Export todo lists to JSON
       description: |
@@ -3026,7 +3026,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /import/todos:
+  /api/import/todos:
     post:
       summary: Import todos from JSON
       description: |
@@ -3120,7 +3120,7 @@ paths:
         '500':
           description: Server error during import
 
-  /import/todo-lists:
+  /api/import/todo-lists:
     post:
       summary: Import todo lists from JSON
       description: |

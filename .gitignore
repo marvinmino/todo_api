@@ -206,3 +206,6 @@ out/
 # Keep logs directory but ignore log files
 /storage/logs/*
 !/storage/logs/.gitignore
+
+#start-up
+start-server.bat
