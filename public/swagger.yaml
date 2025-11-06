@@ -1,0 +1,3223 @@
+openapi: 3.0.3
+info:
+  title: Todo API Documentation
+  version: 1.0.0
+  description: |
+    A comprehensive RESTful API for managing todos, todo lists, tags, comments, sharing, and more. 
+    This API is designed as a learning resource for frontend developers to understand how to interact with a Laravel backend API.
+    
+    ## Features
+    
+    - **User Authentication**: Secure registration and login with Laravel Sanctum token-based authentication
+    - **Todo Lists Management**: Create, organize, and manage multiple todo lists
+    - **Todo Management**: Full CRUD operations with priorities, due dates, and images
+    - **Tags & Categories**: Organize todos with custom tags and colors
+    - **Comments & Collaboration**: Add comments to todos with nested reply support
+    - **Sharing**: Share todo lists with other users with different permission levels
+    - **Notes & Reminders**: Add notes and set reminders for todo lists
+    - **Statistics & Analytics**: Get insights on completion rates, priorities, and overdue items
+    - **Bulk Operations**: Update, delete, or assign tags to multiple todos at once
+    - **Activity Logs**: Track all changes and actions performed
+    - **Export/Import**: Backup and restore your data in JSON format
+    - **Archive & Restore**: Soft delete functionality to archive and restore items
+    - **Search & Filtering**: Advanced search and filtering capabilities
+    - **Pagination**: Efficient data retrieval with pagination support
+    
+    ## Authentication
+    
+    This API uses Laravel Sanctum for authentication. After registering or logging in, you'll receive a bearer token that must be included in the Authorization header for all protected endpoints:
+    
+    ```
+    Authorization: Bearer {your-token-here}
+    ```
+    
+    ## Base URL
+    
+    All API endpoints are prefixed with `/api`. For example:
+    - Register: `POST /api/register`
+    - Get Todo Lists: `GET /api/todo-lists`
+    
+    ## Response Format
+    
+    All API responses follow a consistent structure:
+    
+    **Success Response:**
+    ```json
+    {
+      "message": "Operation successful",
+      "data": { ... }
+    }
+    ```
+    
+    **Error Response:**
+    ```json
+    {
+      "message": "Error message here"
+    }
+    ```
+    
+    **Paginated Response:**
+    ```json
+    {
+      "data": [...],
+      "pagination": {
+        "current_page": 1,
+        "last_page": 5,
+        "per_page": 15,
+        "total": 75
+      },
+      "message": "Data retrieved successfully"
+    }
+    ```
+    
+    ## Getting Started
+    
+    1. **Register a new account** using `POST /api/register`
+    2. **Login** using `POST /api/login` to get your authentication token
+    3. **Use the token** in the Authorization header for all subsequent requests
+    4. **Start creating** todo lists and todos!
+    
+    ## Learning Resources
+    
+    This API is designed to help frontend developers learn:
+    - RESTful API design patterns
+    - Token-based authentication
+    - CRUD operations
+    - Nested resources
+    - Filtering and pagination
+    - File uploads
+    - Error handling
+  contact:
+    email: support@todoapi.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+  - url: https://api.todoapi.com/api
+    description: Production server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints - Register, login, logout, and get authenticated user information. These endpoints allow users to create accounts, authenticate, and manage their session.
+  - name: Todo Lists
+    description: Manage todo lists - Create, read, update, delete, archive, restore, and toggle favorite status. Todo lists are containers for organizing multiple todos together.
+  - name: Todos
+    description: Manage individual todos - Create, read, update, delete, archive, restore, and filter todos. Todos can have priorities, due dates, images, tags, and sub-todos.
+  - name: Tags
+    description: Manage tags for categorizing todos - Create, read, update, and delete tags. Tags help organize and filter todos by categories with custom colors.
+  - name: Comments
+    description: Manage comments on todos - Create, read, update, and delete comments with support for nested replies. Comments enable collaboration and discussion on todos.
+  - name: Notes
+    description: Manage notes for todo lists - Add, view, update, and delete notes attached to todo lists. Notes provide additional context or information about a todo list.
+  - name: Reminders
+    description: Manage reminders for todo lists - Set, view, update, and delete reminders. Reminders help you stay on top of important todo lists with scheduled notifications.
+  - name: Sharing
+    description: Share todo lists with other users - Share, view, update permissions, and remove shares. Collaboration features allow multiple users to work on the same todo list with different permission levels (view, edit, delete).
+  - name: Statistics
+    description: Get statistics and analytics about todos, completion rates, priorities, and more. Use these endpoints to build dashboards and gain insights into your productivity.
+  - name: Bulk Operations
+    description: Perform bulk operations on multiple todos - Update, delete, and assign tags in bulk. These endpoints help you manage multiple todos efficiently without making individual requests.
+  - name: Activity Logs
+    description: View activity logs - Track all changes and actions performed on todos and todo lists. Activity logs provide an audit trail of all modifications made to your data.
+  - name: Export/Import
+    description: Export and import todos and todo lists - Backup and restore your data in JSON format. These endpoints allow you to backup your data or migrate it between accounts.
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "Enter your bearer token in the format: Bearer {token}. You can obtain a token by registering or logging in."
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the user
+        name:
+          type: string
+          example: John Doe
+          description: User's full name
+        email:
+          type: string
+          format: email
+          example: john@example.com
+          description: User's email address
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    TodoList:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the todo list
+        user_id:
+          type: integer
+          example: 1
+          description: ID of the user who owns this todo list
+        title:
+          type: string
+          example: Work Tasks
+          description: Title of the todo list
+        description:
+          type: string
+          nullable: true
+          example: Tasks for work projects
+          description: Optional description of the todo list
+        is_favorite:
+          type: boolean
+          example: false
+          description: Whether this todo list is marked as favorite
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the todo list was archived (soft deleted)
+
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the todo
+        todo_list_id:
+          type: integer
+          example: 1
+          description: ID of the todo list this todo belongs to
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+          description: ID of the parent todo if this is a sub-todo
+        title:
+          type: string
+          example: Complete project documentation
+          description: Title of the todo
+        description:
+          type: string
+          nullable: true
+          example: Write comprehensive documentation for the project
+          description: Optional detailed description of the todo
+        completed:
+          type: boolean
+          example: false
+          description: Whether the todo is completed
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+          example: high
+          description: Priority level of the todo
+        due_date:
+          type: string
+          format: date-time
+          nullable: true
+          example: "2024-01-20T23:59:59.000000Z"
+          description: Due date and time for the todo
+        image_path:
+          type: string
+          nullable: true
+          description: Path to the uploaded image file
+        image_url:
+          type: string
+          nullable: true
+          example: "http://localhost:8000/storage/todos/image.jpg"
+          description: Full URL to access the todo image
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Timestamp when the todo was archived (soft deleted)
+
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the tag
+        user_id:
+          type: integer
+          example: 1
+          description: ID of the user who owns this tag
+        name:
+          type: string
+          example: Work
+          description: Name of the tag
+        color:
+          type: string
+          nullable: true
+          example: "#FF5733"
+          description: Hex color code for the tag (e.g., #FF5733)
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    TodoComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the comment
+        todo_id:
+          type: integer
+          example: 1
+          description: ID of the todo this comment belongs to
+        user_id:
+          type: integer
+          example: 1
+          description: ID of the user who created the comment
+        parent_id:
+          type: integer
+          nullable: true
+          example: null
+          description: ID of the parent comment if this is a reply
+        comment:
+          type: string
+          example: This looks good! Let's proceed with this approach.
+          description: The comment text
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    TodoListNote:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the note
+        todo_list_id:
+          type: integer
+          example: 1
+          description: ID of the todo list this note belongs to
+        note:
+          type: string
+          example: Important reminder about the project deadline
+          description: The note content
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    TodoListReminder:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the reminder
+        todo_list_id:
+          type: integer
+          example: 1
+          description: ID of the todo list this reminder belongs to
+        reminder_date:
+          type: string
+          format: date-time
+          example: "2024-01-20T09:00:00.000000Z"
+          description: Date and time when the reminder should be triggered
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    TodoListShare:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the share
+        todo_list_id:
+          type: integer
+          example: 1
+          description: ID of the todo list being shared
+        user_id:
+          type: integer
+          example: 2
+          description: ID of the user the todo list is shared with
+        permission:
+          type: string
+          enum: [view, edit, delete]
+          example: edit
+          description: Permission level granted to the shared user
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+        updated_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    ActivityLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: Unique identifier for the activity log
+        user_id:
+          type: integer
+          example: 1
+          description: ID of the user who performed the action
+        loggable_type:
+          type: string
+          example: "App\\Models\\Todo"
+          description: Type of the model that was modified
+        loggable_id:
+          type: integer
+          example: 1
+          description: ID of the model that was modified
+        action:
+          type: string
+          example: created
+          description: Action performed (created, updated, deleted, etc.)
+        description:
+          type: string
+          nullable: true
+          example: Todo was created
+          description: Human-readable description of the action
+        old_values:
+          type: object
+          nullable: true
+          description: Previous values before the change
+        new_values:
+          type: object
+          nullable: true
+          description: New values after the change
+        created_at:
+          type: string
+          format: date-time
+          example: "2024-01-15T10:30:00.000000Z"
+
+    Statistics:
+      type: object
+      properties:
+        total_todo_lists:
+          type: integer
+          example: 5
+          description: Total number of todo lists
+        total_todos:
+          type: integer
+          example: 25
+          description: Total number of todos
+        completed_todos:
+          type: integer
+          example: 10
+          description: Number of completed todos
+        pending_todos:
+          type: integer
+          example: 15
+          description: Number of pending todos
+        completion_rate:
+          type: number
+          format: float
+          example: 40.0
+          description: Percentage of completed todos
+        todos_by_priority:
+          type: object
+          properties:
+            low:
+              type: integer
+              example: 5
+            medium:
+              type: integer
+              example: 10
+            high:
+              type: integer
+              example: 7
+            urgent:
+              type: integer
+              example: 3
+        overdue_todos:
+          type: integer
+          example: 2
+          description: Number of todos that are overdue
+        due_today:
+          type: integer
+          example: 3
+          description: Number of todos due today
+        due_this_week:
+          type: integer
+          example: 5
+          description: Number of todos due this week
+        favorite_lists:
+          type: integer
+          example: 2
+          description: Number of favorite todo lists
+
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Operation successful
+        data:
+          type: object
+          description: Response data (structure varies by endpoint)
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Error message here
+        errors:
+          type: object
+          description: Validation errors (only present for validation errors)
+
+    PaginatedResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+        pagination:
+          type: object
+          properties:
+            current_page:
+              type: integer
+              example: 1
+            last_page:
+              type: integer
+              example: 5
+            per_page:
+              type: integer
+              example: 15
+            total:
+              type: integer
+              example: 75
+        message:
+          type: string
+          example: Data retrieved successfully
+
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      description: |
+        Create a new user account with name, email, and password. 
+        After successful registration, you'll receive a bearer token that you can use to authenticate subsequent requests.
+        
+        **Important**: Save the token from the response as you'll need it for all protected endpoints.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - password_confirmation
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                  description: User's full name
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                  description: User's email address (must be unique)
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                  minLength: 8
+                  description: User's password (minimum 8 characters)
+                password_confirmation:
+                  type: string
+                  format: password
+                  example: password123
+                  description: Password confirmation (must match password)
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            example: "1|abcdefghijklmnopqrstuvwxyz1234567890"
+                            description: Bearer token for authentication
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /login:
+    post:
+      summary: Login user
+      description: |
+        Authenticate with your email and password to receive a bearer token. 
+        Use this token in the Authorization header for all protected endpoints.
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  example: password123
+                  description: User's password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+                          token:
+                            type: string
+                            example: "1|abcdefghijklmnopqrstuvwxyz1234567890"
+                            description: Bearer token for authentication
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /logout:
+    post:
+      summary: Logout user
+      description: |
+        Revoke the current authentication token. 
+        After logout, you'll need to login again to get a new token.
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /user:
+    get:
+      summary: Get authenticated user
+      description: |
+        Get the currently authenticated user's information. 
+        This endpoint requires a valid bearer token.
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /statistics:
+    get:
+      summary: Get general statistics
+      description: |
+        Get comprehensive statistics about your todos, completion rates, priorities, and more. 
+        This endpoint provides insights into your productivity and helps you understand your todo management patterns.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Statistics'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /statistics/dashboard:
+    get:
+      summary: Get dashboard statistics
+      description: |
+        Get dashboard-specific statistics. This endpoint returns the same data as `/statistics` 
+        but is specifically designed for dashboard views.
+      tags:
+        - Statistics
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Dashboard statistics retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Statistics'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /todo-lists:
+    get:
+      summary: Get all todo lists
+      description: |
+        Retrieve all todo lists for the authenticated user. 
+        Supports pagination and filtering by favorite status.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          description: Number of items per page (1-100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: is_favorite
+          in: query
+          description: Filter by favorite status
+          required: false
+          schema:
+            type: boolean
+        - name: search
+          in: query
+          description: Search in title and description
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Todo lists retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new todo list
+      description: |
+        Create a new todo list with a title and optional description. 
+        You can mark it as favorite during creation or later.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+              properties:
+                title:
+                  type: string
+                  example: Work Tasks
+                  description: Title of the todo list
+                description:
+                  type: string
+                  nullable: true
+                  example: Tasks for work projects
+                  description: Optional description
+                is_favorite:
+                  type: boolean
+                  example: false
+                  description: Whether to mark as favorite
+      responses:
+        '201':
+          description: Todo list created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoList'
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+
+  /todo-lists/{id}:
+    get:
+      summary: Get a single todo list
+      description: |
+        Retrieve a specific todo list by ID. 
+        You can only access todo lists that belong to you or are shared with you.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo list retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoList'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo list not found
+
+    put:
+      summary: Update a todo list
+      description: |
+        Update an existing todo list. You can only update todo lists that belong to you.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated Work Tasks
+                description:
+                  type: string
+                  nullable: true
+                  example: Updated description
+                is_favorite:
+                  type: boolean
+                  example: true
+      responses:
+        '200':
+          description: Todo list updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoList'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo list not found
+
+    delete:
+      summary: Delete a todo list
+      description: |
+        Permanently delete a todo list and all its associated todos, notes, reminders, and shares. 
+        This action cannot be undone.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo list deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Todo list deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo list not found
+
+  /todo-lists/{todoList}/archive:
+    post:
+      summary: Archive a todo list
+      description: |
+        Archive (soft delete) a todo list. Archived todo lists can be restored later. 
+        They won't appear in regular listings unless you filter for archived items.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo list archived successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Todo list archived successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo list not found
+
+  /todo-lists/{id}/restore:
+    post:
+      summary: Restore an archived todo list
+      description: |
+        Restore a previously archived todo list. 
+        The todo list will become active again and appear in regular listings.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Archived todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo list restored successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoList'
+        '401':
+          description: Unauthenticated
+        '404':
+          description: Todo list not found
+
+  /todo-lists/{todoList}/toggle-favorite:
+    post:
+      summary: Toggle favorite status
+      description: |
+        Toggle the favorite status of a todo list. 
+        If it's currently a favorite, it will be unfavorited, and vice versa.
+      tags:
+        - Todo Lists
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Favorite status updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoList'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo list not found
+
+  /todo-lists/{todoList}/notes:
+    get:
+      summary: Get all notes for a todo list
+      description: |
+        Retrieve all notes associated with a specific todo list.
+      tags:
+        - Notes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Notes retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TodoListNote'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+
+    post:
+      summary: Create a note for a todo list
+      description: |
+        Add a new note to a todo list. Notes provide additional context or information about the todo list.
+      tags:
+        - Notes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - note
+              properties:
+                note:
+                  type: string
+                  example: Important reminder about the project deadline
+                  description: The note content
+      responses:
+        '201':
+          description: Note created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListNote'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  /todo-lists/{todoList}/notes/{note}:
+    get:
+      summary: Get a single note
+      description: |
+        Retrieve a specific note by ID from a todo list.
+      tags:
+        - Notes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: note
+          in: path
+          required: true
+          description: Note ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Note retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListNote'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Note not found
+
+    put:
+      summary: Update a note
+      description: |
+        Update an existing note in a todo list.
+      tags:
+        - Notes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: note
+          in: path
+          required: true
+          description: Note ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - note
+              properties:
+                note:
+                  type: string
+                  example: Updated note content
+      responses:
+        '200':
+          description: Note updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListNote'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Note not found
+
+    delete:
+      summary: Delete a note
+      description: |
+        Delete a note from a todo list.
+      tags:
+        - Notes
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: note
+          in: path
+          required: true
+          description: Note ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Note deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Note deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Note not found
+
+  /todo-lists/{todoList}/reminders:
+    get:
+      summary: Get all reminders for a todo list
+      description: |
+        Retrieve all reminders associated with a specific todo list.
+      tags:
+        - Reminders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reminders retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TodoListReminder'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+
+    post:
+      summary: Create a reminder for a todo list
+      description: |
+        Add a new reminder to a todo list. Reminders help you stay on top of important todo lists with scheduled notifications.
+      tags:
+        - Reminders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reminder_date
+              properties:
+                reminder_date:
+                  type: string
+                  format: date-time
+                  example: "2024-01-20T09:00:00.000000Z"
+                  description: Date and time when the reminder should be triggered
+      responses:
+        '201':
+          description: Reminder created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListReminder'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  /todo-lists/{todoList}/reminders/{reminder}:
+    get:
+      summary: Get a single reminder
+      description: |
+        Retrieve a specific reminder by ID from a todo list.
+      tags:
+        - Reminders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: reminder
+          in: path
+          required: true
+          description: Reminder ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reminder retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListReminder'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Reminder not found
+
+    put:
+      summary: Update a reminder
+      description: |
+        Update an existing reminder in a todo list.
+      tags:
+        - Reminders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: reminder
+          in: path
+          required: true
+          description: Reminder ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - reminder_date
+              properties:
+                reminder_date:
+                  type: string
+                  format: date-time
+                  example: "2024-01-25T09:00:00.000000Z"
+      responses:
+        '200':
+          description: Reminder updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListReminder'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Reminder not found
+
+    delete:
+      summary: Delete a reminder
+      description: |
+        Delete a reminder from a todo list.
+      tags:
+        - Reminders
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: reminder
+          in: path
+          required: true
+          description: Reminder ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Reminder deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reminder deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Reminder not found
+
+  /todo-lists/{todoList}/shares:
+    get:
+      summary: Get all shares for a todo list
+      description: |
+        Retrieve all shares (collaborators) for a specific todo list. 
+        This shows who the todo list is shared with and their permission levels.
+      tags:
+        - Sharing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Shares retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TodoListShare'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+
+    post:
+      summary: Share a todo list with a user
+      description: |
+        Share a todo list with another user. You can specify the permission level:
+        - **view**: User can only view the todo list
+        - **edit**: User can view and edit todos in the list
+        - **delete**: User has full access including deletion
+        
+        **Note**: You can only share todo lists that you own.
+      tags:
+        - Sharing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - user_id
+                - permission
+              properties:
+                user_id:
+                  type: integer
+                  example: 2
+                  description: ID of the user to share with
+                permission:
+                  type: string
+                  enum: [view, edit, delete]
+                  example: edit
+                  description: Permission level to grant
+      responses:
+        '201':
+          description: Todo list shared successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListShare'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  /todo-lists/{todoList}/shares/{share}:
+    get:
+      summary: Get a single share
+      description: |
+        Retrieve a specific share by ID from a todo list.
+      tags:
+        - Sharing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: share
+          in: path
+          required: true
+          description: Share ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Share retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListShare'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Share not found
+
+    put:
+      summary: Update share permissions
+      description: |
+        Update the permission level for a shared todo list. 
+        You can change the permission level (view, edit, delete) for a user.
+      tags:
+        - Sharing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: share
+          in: path
+          required: true
+          description: Share ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - permission
+              properties:
+                permission:
+                  type: string
+                  enum: [view, edit, delete]
+                  example: delete
+                  description: New permission level
+      responses:
+        '200':
+          description: Share updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoListShare'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Share not found
+
+    delete:
+      summary: Remove a share
+      description: |
+        Remove sharing access for a user. The user will no longer have access to the todo list.
+      tags:
+        - Sharing
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todoList
+          in: path
+          required: true
+          description: Todo list ID
+          schema:
+            type: integer
+        - name: share
+          in: path
+          required: true
+          description: Share ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Share removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Share removed successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Share not found
+
+  /todos:
+    get:
+      summary: Get all todos
+      description: |
+        Retrieve all todos for the authenticated user. 
+        Supports extensive filtering, sorting, and pagination.
+        
+        **Filtering Options:**
+        - Filter by completion status
+        - Filter by priority (low, medium, high, urgent)
+        - Filter by due date range
+        - Filter by todo list
+        - Filter by tags
+        - Filter by parent todo (for sub-todos)
+        - Search by title/description
+        - Filter archived todos
+        
+        **Sorting Options:**
+        - Sort by title, created_at, updated_at, due_date, or priority
+        - Sort order: asc or desc
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          description: Number of items per page (1-100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: sort_by
+          in: query
+          description: Field to sort by
+          required: false
+          schema:
+            type: string
+            enum: [title, created_at, updated_at, due_date, priority]
+        - name: sort_order
+          in: query
+          description: Sort order
+          required: false
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+        - name: completed
+          in: query
+          description: Filter by completion status
+          required: false
+          schema:
+            type: boolean
+        - name: priority
+          in: query
+          description: Filter by priority level
+          required: false
+          schema:
+            type: string
+            enum: [low, medium, high, urgent]
+        - name: due_date_from
+          in: query
+          description: Filter todos with due date from this date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: due_date_to
+          in: query
+          description: Filter todos with due date to this date
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: overdue
+          in: query
+          description: Filter overdue todos (past due date and not completed)
+          required: false
+          schema:
+            type: boolean
+        - name: due_today
+          in: query
+          description: Filter todos due today
+          required: false
+          schema:
+            type: boolean
+        - name: todo_list_id
+          in: query
+          description: Filter by todo list ID
+          required: false
+          schema:
+            type: integer
+        - name: parent_id
+          in: query
+          description: Filter by parent todo ID (for sub-todos)
+          required: false
+          schema:
+            type: integer
+            nullable: true
+        - name: tag_ids
+          in: query
+          description: Filter by tag IDs (comma-separated or array)
+          required: false
+          schema:
+            type: array
+            items:
+              type: integer
+        - name: search
+          in: query
+          description: Search in title and description
+          required: false
+          schema:
+            type: string
+        - name: archived
+          in: query
+          description: Include archived todos
+          required: false
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Todos retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new todo
+      description: |
+        Create a new todo item. You can optionally:
+        - Set priority (low, medium, high, urgent)
+        - Set a due date
+        - Attach tags
+        - Create as a sub-todo by specifying parent_id
+        - Upload an image
+        
+        **Image Upload:**
+        When uploading an image, use `multipart/form-data` content type instead of `application/json`.
+        The image file should be sent as `image` field.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todo_list_id
+                - title
+              properties:
+                todo_list_id:
+                  type: integer
+                  example: 1
+                  description: ID of the todo list this todo belongs to
+                parent_id:
+                  type: integer
+                  nullable: true
+                  example: null
+                  description: ID of the parent todo if this is a sub-todo
+                title:
+                  type: string
+                  example: Complete project documentation
+                  description: Title of the todo
+                description:
+                  type: string
+                  nullable: true
+                  example: Write comprehensive documentation
+                  description: Optional detailed description
+                completed:
+                  type: boolean
+                  example: false
+                  description: "Whether the todo is completed (default: false)"
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                  example: high
+                  description: "Priority level (default: medium)"
+                due_date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  example: "2024-01-20T23:59:59.000000Z"
+                  description: Due date and time
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                  description: Array of tag IDs to attach
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - todo_list_id
+                - title
+              properties:
+                todo_list_id:
+                  type: integer
+                  example: 1
+                parent_id:
+                  type: integer
+                  nullable: true
+                title:
+                  type: string
+                  example: Complete project documentation
+                description:
+                  type: string
+                  nullable: true
+                completed:
+                  type: boolean
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                due_date:
+                  type: string
+                  format: date-time
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                image:
+                  type: string
+                  format: binary
+                  description: Image file (jpeg, png, jpg, gif, max 2MB)
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  /todos/{id}:
+    get:
+      summary: Get a single todo
+      description: |
+        Retrieve a specific todo by ID. 
+        You can only access todos that belong to your todo lists or shared todo lists.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo not found
+
+    put:
+      summary: Update a todo
+      description: |
+        Update an existing todo. You can update any field including uploading a new image.
+        
+        **Image Upload:**
+        When uploading an image, use `multipart/form-data` content type.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: Updated todo title
+                description:
+                  type: string
+                  nullable: true
+                completed:
+                  type: boolean
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                due_date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                  nullable: true
+                completed:
+                  type: boolean
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                due_date:
+                  type: string
+                  format: date-time
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                image:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo not found
+        '422':
+          description: Validation error
+
+    delete:
+      summary: Delete a todo
+      description: |
+        Permanently delete a todo. This action cannot be undone.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Todo deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo not found
+
+  /todos/{todo}/archive:
+    post:
+      summary: Archive a todo
+      description: |
+        Archive (soft delete) a todo. Archived todos can be restored later. 
+        They won't appear in regular listings unless you filter for archived items.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo archived successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Todo archived successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Todo not found
+
+  /todos/{id}/restore:
+    post:
+      summary: Restore an archived todo
+      description: |
+        Restore a previously archived todo. 
+        The todo will become active again and appear in regular listings.
+      tags:
+        - Todos
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Archived todo ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Todo restored successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Todo'
+        '401':
+          description: Unauthenticated
+        '404':
+          description: Todo not found
+
+  /todos/{todo}/comments:
+    get:
+      summary: Get all comments for a todo
+      description: |
+        Retrieve all comments associated with a specific todo. 
+        Comments are returned with their nested replies.
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/TodoComment'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+
+    post:
+      summary: Create a comment on a todo
+      description: |
+        Add a new comment to a todo. You can create a top-level comment or reply to an existing comment by specifying parent_id.
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  example: This looks good! Let's proceed with this approach.
+                  description: The comment text
+                parent_id:
+                  type: integer
+                  nullable: true
+                  example: null
+                  description: ID of the parent comment if this is a reply
+      responses:
+        '201':
+          description: Comment created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoComment'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '422':
+          description: Validation error
+
+  /todos/{todo}/comments/{comment}:
+    get:
+      summary: Get a single comment
+      description: |
+        Retrieve a specific comment by ID from a todo.
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+        - name: comment
+          in: path
+          required: true
+          description: Comment ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoComment'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Comment not found
+
+    put:
+      summary: Update a comment
+      description: |
+        Update an existing comment. You can only update comments that you created.
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+        - name: comment
+          in: path
+          required: true
+          description: Comment ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - comment
+              properties:
+                comment:
+                  type: string
+                  example: Updated comment text
+      responses:
+        '200':
+          description: Comment updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/TodoComment'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Comment not found
+
+    delete:
+      summary: Delete a comment
+      description: |
+        Delete a comment. You can only delete comments that you created.
+      tags:
+        - Comments
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: todo
+          in: path
+          required: true
+          description: Todo ID
+          schema:
+            type: integer
+        - name: comment
+          in: path
+          required: true
+          description: Comment ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Comment deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Comment deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Comment not found
+
+  /tags:
+    get:
+      summary: Get all tags
+      description: |
+        Retrieve all tags created by the authenticated user. 
+        Tags help organize and categorize todos.
+      tags:
+        - Tags
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Tags retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create a new tag
+      description: |
+        Create a new tag with a name and optional color. 
+        Tags can be used to categorize and filter todos.
+      tags:
+        - Tags
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                  example: Work
+                  description: Name of the tag
+                color:
+                  type: string
+                  nullable: true
+                  example: "#FF5733"
+                  description: Hex color code for the tag (e.g., #FF5733)
+      responses:
+        '201':
+          description: Tag created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+
+  /tags/{id}:
+    get:
+      summary: Get a single tag
+      description: |
+        Retrieve a specific tag by ID. 
+        You can only access tags that you created.
+      tags:
+        - Tags
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tag ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tag retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Tag not found
+
+    put:
+      summary: Update a tag
+      description: |
+        Update an existing tag. You can only update tags that you created.
+      tags:
+        - Tags
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tag ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Updated Work Tag
+                color:
+                  type: string
+                  nullable: true
+                  example: "#33FF57"
+      responses:
+        '200':
+          description: Tag updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/Tag'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Tag not found
+
+    delete:
+      summary: Delete a tag
+      description: |
+        Delete a tag. This will remove the tag from all todos that have it attached, 
+        but it won't delete the todos themselves.
+      tags:
+        - Tags
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Tag ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Tag deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tag deleted successfully
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Tag not found
+
+  /todos/bulk-update:
+    post:
+      summary: Bulk update todos
+      description: |
+        Update multiple todos at once. This is useful when you need to change the same field 
+        (like priority, completion status, or due date) for multiple todos.
+        
+        **Example Use Cases:**
+        - Mark multiple todos as completed
+        - Change priority for multiple todos
+        - Update due dates for multiple todos
+        - Change todo list for multiple todos
+      tags:
+        - Bulk Operations
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todo_ids
+              properties:
+                todo_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2, 3, 4, 5]
+                  description: Array of todo IDs to update
+                completed:
+                  type: boolean
+                  example: true
+                  description: Update completion status
+                priority:
+                  type: string
+                  enum: [low, medium, high, urgent]
+                  example: high
+                  description: Update priority level
+                due_date:
+                  type: string
+                  format: date-time
+                  nullable: true
+                  example: "2024-01-25T23:59:59.000000Z"
+                  description: Update due date
+                todo_list_id:
+                  type: integer
+                  example: 2
+                  description: Move todos to a different todo list
+      responses:
+        '200':
+          description: Todos updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          updated_count:
+                            type: integer
+                            example: 5
+                            description: Number of todos updated
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+
+  /todos/bulk-delete:
+    post:
+      summary: Bulk delete todos
+      description: |
+        Delete multiple todos at once. This action cannot be undone. 
+        All specified todos will be permanently deleted.
+      tags:
+        - Bulk Operations
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todo_ids
+              properties:
+                todo_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2, 3]
+                  description: Array of todo IDs to delete
+      responses:
+        '200':
+          description: Todos deleted successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          deleted_count:
+                            type: integer
+                            example: 3
+                            description: Number of todos deleted
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+
+  /todos/bulk-assign-tags:
+    post:
+      summary: Bulk assign tags to todos
+      description: |
+        Assign one or more tags to multiple todos at once. 
+        This is useful for categorizing multiple todos with the same tags.
+      tags:
+        - Bulk Operations
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todo_ids
+                - tag_ids
+              properties:
+                todo_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2, 3, 4, 5]
+                  description: Array of todo IDs to assign tags to
+                tag_ids:
+                  type: array
+                  items:
+                    type: integer
+                  example: [1, 2]
+                  description: Array of tag IDs to assign
+      responses:
+        '200':
+          description: Tags assigned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Tags assigned successfully
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+
+  /activity-logs:
+    get:
+      summary: Get all activity logs
+      description: |
+        Retrieve all activity logs for the authenticated user. 
+        Activity logs track all changes and actions performed on todos and todo lists.
+        
+        This provides an audit trail of:
+        - When todos/todo lists were created, updated, or deleted
+        - What changes were made (old values vs new values)
+        - Who performed the action
+      tags:
+        - Activity Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: per_page
+          in: query
+          description: Number of items per page (1-100)
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 15
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: Activity logs retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedResponse'
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /activity-logs/{log}:
+    get:
+      summary: Get a single activity log
+      description: |
+        Retrieve a specific activity log by ID. 
+        You can only access activity logs for your own actions.
+      tags:
+        - Activity Logs
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: log
+          in: path
+          required: true
+          description: Activity log ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Activity log retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ActivityLog'
+        '401':
+          description: Unauthenticated
+        '403':
+          description: Unauthorized
+        '404':
+          description: Activity log not found
+
+  /export/todos:
+    post:
+      summary: Export todos to JSON
+      description: |
+        Export all your todos to JSON format. This includes:
+        - All todo details (title, description, priority, due date, etc.)
+        - Associated todo lists
+        - Tags
+        - Parent/child relationships (sub-todos)
+        - Comments
+        
+        This is useful for:
+        - Creating backups
+        - Migrating data between accounts
+        - Data analysis
+      tags:
+        - Export/Import
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Todos exported successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          todos:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Todo'
+                          exported_at:
+                            type: string
+                            format: date-time
+                            example: "2024-01-15T10:30:00.000000Z"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /export/todo-lists:
+    post:
+      summary: Export todo lists to JSON
+      description: |
+        Export all your todo lists to JSON format. This includes:
+        - All todo list details
+        - All todos in each list
+        - Notes and reminders
+        - Shares (collaborators)
+        
+        This is useful for:
+        - Creating backups
+        - Migrating data between accounts
+        - Data analysis
+      tags:
+        - Export/Import
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Todo lists exported successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          todo_lists:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/TodoList'
+                          exported_at:
+                            type: string
+                            format: date-time
+                            example: "2024-01-15T10:30:00.000000Z"
+        '401':
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /import/todos:
+    post:
+      summary: Import todos from JSON
+      description: |
+        Import todos from a JSON format. The JSON should match the export format.
+        
+        **Important Notes:**
+        - Todos must reference existing todo lists (todo_list_id must exist)
+        - Tags will be attached if tag_ids are provided and tags exist
+        - Parent todos must be created before sub-todos
+        - The import will skip todos that reference non-existent todo lists
+        
+        **Response includes:**
+        - Number of successfully imported todos
+        - List of any errors encountered
+      tags:
+        - Export/Import
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todos
+              properties:
+                todos:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - todo_list_id
+                      - title
+                    properties:
+                      todo_list_id:
+                        type: integer
+                        example: 1
+                        description: ID of the todo list (must exist)
+                      title:
+                        type: string
+                        example: Imported todo
+                      description:
+                        type: string
+                        nullable: true
+                      completed:
+                        type: boolean
+                        default: false
+                      priority:
+                        type: string
+                        enum: [low, medium, high, urgent]
+                        default: medium
+                      due_date:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      parent_id:
+                        type: integer
+                        nullable: true
+                      tag_ids:
+                        type: array
+                        items:
+                          type: integer
+      responses:
+        '200':
+          description: Todos imported successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          imported_count:
+                            type: integer
+                            example: 10
+                            description: Number of todos successfully imported
+                          errors:
+                            type: array
+                            items:
+                              type: string
+                            example: []
+                            description: List of error messages for failed imports
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+        '500':
+          description: Server error during import
+
+  /import/todo-lists:
+    post:
+      summary: Import todo lists from JSON
+      description: |
+        Import todo lists from a JSON format. The JSON should match the export format.
+        
+        **Features:**
+        - Can import todo lists with nested todos
+        - Todos will be created automatically if included in the todo list data
+        - Tags will be attached if tag_ids are provided
+        
+        **Response includes:**
+        - Number of successfully imported todo lists
+        - List of any errors encountered
+      tags:
+        - Export/Import
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - todo_lists
+              properties:
+                todo_lists:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - title
+                    properties:
+                      title:
+                        type: string
+                        example: Imported Todo List
+                      description:
+                        type: string
+                        nullable: true
+                      is_favorite:
+                        type: boolean
+                        default: false
+                      todos:
+                        type: array
+                        items:
+                          type: object
+                          required:
+                            - title
+                          properties:
+                            title:
+                              type: string
+                            description:
+                              type: string
+                              nullable: true
+                            completed:
+                              type: boolean
+                            priority:
+                              type: string
+                              enum: [low, medium, high, urgent]
+                            due_date:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            parent_id:
+                              type: integer
+                              nullable: true
+                            tag_ids:
+                              type: array
+                              items:
+                                type: integer
+      responses:
+        '200':
+          description: Todo lists imported successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/SuccessResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          imported_count:
+                            type: integer
+                            example: 5
+                            description: Number of todo lists successfully imported
+                          errors:
+                            type: array
+                            items:
+                              type: string
+                            example: []
+                            description: List of error messages for failed imports
+        '401':
+          description: Unauthenticated
+        '422':
+          description: Validation error
+        '500':
+          description: Server error during import
+

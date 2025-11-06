@@ -1,0 +1,208 @@
+# Laravel Framework
+/.phpunit.cache
+/.phpunit.result.cache
+/artisan
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+!/bootstrap/cache/packages.php
+!/bootstrap/cache/services.php
+
+# Dependencies
+/vendor/
+/node_modules/
+/package-lock.json
+/yarn.lock
+
+# Environment Files
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+*.env
+
+# Application Cache & Logs
+/storage/*.key
+/storage/logs/*
+!/storage/logs/.gitignore
+/storage/framework/cache/*
+!/storage/framework/cache/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/storage/app/*
+!/storage/app/.gitignore
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+# Public Storage
+/public/storage
+/public/hot
+/public/build
+/public/mix-manifest.json
+
+# Compiled Assets
+/public/css
+/public/js
+/public/mix-manifest.json
+/public/build
+
+# IDE & Editor Files
+/.idea
+/.vscode
+/.fleet
+/.fleetignore
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Testing
+/phpunit.xml
+/phpunit.result.cache
+/.phpunit.cache
+/coverage
+/.phpunit.result.cache
+/tests/_output/*
+!/tests/_output/.gitignore
+
+# Homestead
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Composer
+/vendor/
+composer.phar
+composer.lock
+auth.json
+
+# NPM
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Vite
+/public/build
+/public/hot
+/vite.config.js.timestamp-*
+
+# Laravel Mix
+/public/mix-manifest.json
+/public/hot
+
+# Laravel Sail
+/.env.sail
+
+# Laravel Telescope
+/storage/telescope
+
+# Laravel Horizon
+/storage/horizon
+
+# API Documentation (if generated)
+/storage/api-docs/*
+!/storage/api-docs/.gitignore
+
+# Temporary Files
+*.tmp
+*.temp
+*.log
+*.cache
+*.bak
+*.backup
+*.old
+*.orig
+
+# Database
+*.sqlite
+*.sqlite-journal
+*.db
+
+# Backup Files
+*.backup
+*.bak
+*.old
+*.orig
+*.swp
+*.swo
+*~
+
+# Compiled Files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archives
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Cache Directories
+.cache/
+cache/
+*.cache
+
+# Build Directories
+build/
+dist/
+out/
+
+# Misc
+.idea/
+.vscode/
+*.sublime-*
+.fleet/
+.fleetignore
+
+# Laravel specific
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/testing/*
+!/storage/framework/testing/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+
+# Keep storage structure but ignore files
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+# Keep logs directory but ignore log files
+/storage/logs/*
+!/storage/logs/.gitignore
